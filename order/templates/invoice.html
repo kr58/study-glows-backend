@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Glow: Order Invoice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font_size: 14px;
+      --line_height: inherit;
+    }
+
+    html {
+      background-color: #E5E5E5;
+    }
+
+    body {
+      font-family: lato, 'helvetica neue', helvetica, arial, sans-serif;
+      background-color: #fff;
+      max-width: 50%;
+      margin: 1rem auto;
+      color: #333333;
+      line-height: var(--line_height);
+      font-size: var(--font_size);
+    }
+
+    .container {
+      padding: 1rem;
+    }
+
+    .invoice {
+      text-align: left;
+      font-weight: 500;
+      color: #0373BA;
+      line-height: calc(2*var(--line_height));
+      font-size: calc(2*var(--font_size));
+      padding: 0.5rem 0;
+    }
+
+    .invoice_detail {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      grid-column-gap: 0.5rem;
+    }
+
+    .invoice_detail .key {
+      color: #666666;
+      font-weight: 600;
+      font-size: calc(1.25*var(--font_size));
+      line-height: calc(1.25*var(--line_height));
+    }
+
+    .invoice_detail .value {
+      color: #000000;
+      font-weight: 600;
+      font-size: calc(1.25*var(--font_size));
+      line-height: calc(1.25*var(--line_height));
+    }
+
+    .logo img {
+      max-width: 5rem;
+    }
+
+    .shipping_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 0.5rem;
+    }
+
+    .billed-by,
+    .billed-to {
+      background: #E6F5FF;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    .billed-by strong,
+    .billed-to strong {
+      color: #0373BA;
+      font-size: calc(1.5*var(--font_size));
+      line-height: calc(1.5*var(--line_height));
+    }
+
+    .billed-by p,
+    .billed-to p {
+      margin: 2px;
+    }
+
+    .items {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0;
+    }
+
+    .column-header {
+      padding: 0.5rem 0.25rem;
+      color: #fff;
+      background-color: #0373BA;
+      font-size: calc(1.125*var(--font_size));
+      line-height: calc(1.125*var(--line_height));
+    }
+
+    .custom-row {
+      word-break: break-word;
+      border-bottom: 0.5px solid rgb(187, 186, 186);
+      padding: 0.25rem;
+      background-color: #D9D9D9;
+    }
+
+
+    .summary {
+      margin: 1rem 0;
+      display: grid;
+      grid-template-columns: 7fr 3fr;
+      grid-gap: 1rem;
+    }
+
+    .word {
+      font-weight: 600;
+    }
+
+    .word span {
+      text-transform: uppercase;
+    }
+
+    .total {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      grid-column-gap: 0.5rem;
+      padding: 0 1rem;
+    }
+
+    .total .key,
+    .total .value {
+      font-weight: 500;
+      font-size: var(--font_size);
+      line-height: var(--line_height);
+    }
+
+    .total .value {
+      justify-self: end;
+    }
+
+    .total .hr_line {
+      grid-column: 1/-1;
+      height: 1px;
+      width: 100%;
+      margin: 2px 0;
+      background: #000000;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <table width="100%" style="margin: 0.5rem 0;">
+      <tr>
+        <td width="70%">
+          <div class="invoice">INVOICE</div>
+          <div class="invoice_detail">
+            <div class="key">Invoice No #</div>
+            <div class="value">{{order.id}}</div>
+            <div class="key">Due Date</div>
+            <div class="value">{{order.order_placed}}</div>
+            <div class="key">GST No</div>
+            <div class="value">AAAAA00000AA</div>
+          </div>
+        </td>
+        <td width="30%">
+          <div class="logo"><img src="/static/images/study_glows_logo_filled01.png" alt="logo"></div>
+        </td>
+      </tr>
+    </table>
+    <div class="shipping_grid">
+      <div class="billed-by">
+        <p><strong>Billed By</strong> </p>
+        <p><b>Study Glows Edtech Pvt. Ltd.</b></p>
+        <p>Sector C1 LDA Colony <br />
+          Kanpur road Lucknow <br />
+          Uttar Pradesh, India- 226012
+        </p>
+        <p><b>Email: </b> contact@studyglows.com </p>
+        <p><b>Phone: </b> +91 70075 44717</p>
+      </div>
+      <div class="billed-to">
+        <p><strong>Billed To</strong> </p>
+        <p><b>{{user.full_name}}</b></p>
+        <p>{{user.address|default:''}} <br />
+          {{user.city|default:''}}<br />
+          {{user.state|default:''}} {{user.country|default:''}}
+        </p>
+        <p><b>Email: </b> {{ user.email|default:''}} </p>
+        <p><b>Phone: </b> {{ user.phone|default:''}}</p>
+      </div>
+    </div>
+
+    <table class="items">
+      <tr>
+        <td width="30%" class="column-header"><b>Item</b></td>
+        <td class="column-header"> <b>Discount</b></td>
+        <td class="column-header"> <b>Amount</b></td>
+        <td class="column-header"> <b>CGST</b></td>
+        <td class="column-header"> <b>SGST</b></td>
+        <td class="column-header"> <b>Total</b></td>
+      </tr>
+      {% for productQ in product_details %}
+      <tr>
+        <td class="custom-row">{{ productQ.item }}</td>
+        <td class="custom-row">{{ productQ.coupon_amount|default:'0' }}</td>
+        <td class="custom-row">{{ productQ.amount }}</td>
+        <td class="custom-row">{{ productQ.cgst }}</td>
+        <td class="custom-row">{{ productQ.sgst }}</td>
+        <td class="custom-row">{{ productQ.total_amount }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="summary">
+      <div class="word">
+        Total (in words): <span> {{total_in_words}} </span>
+      </div>
+      <div class="total">
+        <div class="key"><b>Sub Total</b></div>
+        <div class="value">{{subtotal}}</div>
+        <div class="key"><b>Tax</b></div>
+        <div class="value">{{total_tax}}</div>
+        <div class="key"><b>Discount</b></div>
+        <div class="value">{{total_discount}}</div>
+        <div class="hr_line"></div>
+        <div class="key"><b>Total</b></div>
+        <div class="value">{{total}}</div>
+      </div>
+    </div>
+
+    <div style="padding-top: 20px;margin:20px 0 0 0;line-height:22px;text-align: center;">
+      For any enquiry reach out via email at <b>contact@studyglows.com</b> or on <b>+91 70075 44717</b>
+    </div>
+  </div>
+
+</body>
+
+</html>

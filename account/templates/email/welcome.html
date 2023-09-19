@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Study Glow</title>
+  <style>
+    html {
+      background-color: black;
+    }
+
+    body {
+      font-family: lato, 'helvetica neue', helvetica, arial, sans-serif;
+      background-color: #fff;
+      max-width: 45vw;
+      margin: 1rem auto;
+      color: #333333;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    main {
+      margin: 0 1rem;
+      padding: 1rem 0 0 0;
+    }
+
+    main .welcome {
+      background-color: #cbdeee;
+      margin: 1rem 0;
+      padding: 0.5rem 0;
+    }
+
+    main .logo {
+      text-align: center;
+    }
+
+    main .logo img {
+      width: 5rem;
+    }
+
+    main h1 {
+      padding: 0;
+      margin: 0;
+      font-size: 2rem;
+      text-align: center;
+      line-height: 64px;
+      font-weight: 500;
+    }
+
+    main p {
+      margin: 1rem 0;
+    }
+
+
+    footer .contactus {
+      text-align: center;
+      padding-top: 1rem;
+    }
+
+    footer ul {
+      list-style: none;
+      text-align: center;
+    }
+
+    footer ul li {
+      display: inline-block;
+    }
+
+    footer ul li img {
+      max-width: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <div class="welcome">
+      <div class="logo">
+        <img src="images/study_glows_logo_filled01.png" />
+      </div>
+      <h1>Welcome to Study Glows</h1>
+    </div>
+
+    <div class="content">
+      <b>Dear {{user.full_name}}, </b> <br>
+      <p>
+        Welcome to Study Glows Your account has been created successfully. Access your account to update additional
+        details, and access the course material at
+      </p>
+
+      <b>My <a href="{{domain}}/dashboard" style="color: #2CB543;">Dashboard</a></b>
+
+      <p>
+        In case you need some assistance, do not reply to this email to get in touch with our team call us on
+        +91-7007544717. Explore our courses here We look forward to seeing you soon.
+      </p>
+      <p>
+        Thanks and Regards, <br>
+        Team Study Glows
+      </p>
+    </div>
+  </main>
+  <footer>
+    <ul>
+      <li><a href="{{socialLinks.facebook}}"><img src="images/facebook-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.twitter}}"><img src="images/twitter-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.instagram}}"><img src="images/instagram-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.youtube}}"><img src="images/youtube-circle-colored.png" /></a></li>
+    </ul>
+  </footer>
+</body>
+
+</html>

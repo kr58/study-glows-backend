@@ -1,0 +1,22 @@
+# ignore .git and .cache folders
+.git
+.cache
+.gitignore
+
+# ignore vscode
+.vscode
+
+# ignore all markdown files (md) beside all README*.md other than README-secret.md
+*.md
+!README*.md
+
+# ignore venv folders
+venv
+myenv
+
+# sqllite
+db.*
+db.sqlite3
+
+# ignore media
+media

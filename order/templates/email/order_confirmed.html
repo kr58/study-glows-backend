@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Glow: Order Confirmed</title>
+  <style>
+    html {
+      background-color: black;
+    }
+
+    body {
+      font-family: arial, 'helvetica neue', helvetica, sans-serif;
+      background-color: #fff;
+      max-width: 45vw;
+      margin: 0 auto;
+      color: #333333;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    main {
+      margin: 0 1rem;
+      padding: 1rem 0 0 0;
+    }
+
+    main .logo {
+      text-align: center;
+    }
+
+    main .logo img {
+      width: 7rem;
+    }
+
+    main h1 {
+      padding: 0.5rem 0;
+      margin: 0;
+      font-size: 46px;
+      text-align: center;
+      line-height: 46px;
+    }
+
+    main .overview {
+      text-align: center;
+    }
+
+    main .overview p {
+      margin: 0.25rem;
+    }
+
+    main .overview h2 {
+      font-size: 26px;
+      margin: 0;
+      padding: 1rem 0;
+    }
+
+    main .visit_dashboard {
+      background-color: #c32730;
+      border: 2px solid #5c68e2;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      width: max-content;
+      margin-left: 50%;
+      transform: translateX(-50%);
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    main .visit_dashboard a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    main .order_detail .grid {
+      display: grid;
+      grid-template-columns: 5rem 1fr 5rem;
+      grid-gap: 1.5rem;
+      align-items: center;
+    }
+
+    .grid img {
+      width: 100%;
+    }
+
+    .grid p {
+      margin: 0.25rem 0;
+    }
+
+    main .order_detail .total {
+      text-align: right;
+      margin: 0 1rem;
+    }
+
+    main .user_detail {
+      padding: 1rem 0;
+    }
+
+
+    footer .contactus {
+      text-align: center;
+      padding-top: 1rem;
+    }
+
+    footer ul {
+      list-style: none;
+      text-align: center;
+    }
+
+    footer ul li {
+      display: inline-block;
+    }
+
+    footer ul li img {
+      max-width: 2rem;
+    }
+
+    hr {
+      color: #efefef;
+      color: #efefef;
+      height: 2px;
+      background: #efefef;
+      border: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <div class="logo">
+      <img src="/static/images/study_glows_logo_filled01.png" />
+    </div>
+    <h1>Order Confirmation</h1>
+    <div class="overview">
+      <h2 class="order_no">Order <span style="color: #166b3b;">#{{order.id}}</span></h2>
+      <p class="date">{{order.order_placed}}</p>
+      <p class="about">This email is to confirm your order.</p>
+      <div class="visit_dashboard"><a href="#">Visit Dashboard</a></a></div>
+    </div>
+    <div class="order_detail">
+      {% for productQ in product_details %}
+      <div class="grid">
+        <div><img src="{{productQ.item.thumbnail.url}}" /></div>
+        <div>
+          <p><b>{{productQ.item}}</b></p>
+          <!-- <p>Valid</p> -->
+        </div>
+        <div>₹{{productQ.total_amount}}</div>
+      </div>
+      {% endfor %}
+
+      <hr>
+      <div class="total">
+        <div>Subtotal: <b>₹{{subtotal}}</b></div>
+        <div>Tax: <b>₹{{total_tax}}</b></div>
+        <div>Discount: <b>₹{{total_discount}}</b></div>
+        <div>Total: <b>₹{{total}}</b></div>
+      </div>
+      <hr>
+    </div>
+    <div class="user_detail">
+      <div>Customer: <b>{{user.full_name}}</b></div>
+      <div>Order number: <b>{{order.id}}</b></div>
+      <div>Invoice date: <b>{{order.order_placed}}</b></div>
+      <div>Payment method: <b>online</b></div>
+      <div>Currency: <b>INR</b></div>
+    </div>
+  </main>
+  <footer>
+    <div class="contactus">Got a question? Email us at contact@studyglows.com or give us a call at +91- 7007544717.
+    </div>
+    <ul>
+      <li><a href="{{socialLinks.facebook}}"><img src="/static/images/facebook-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.twitter}}"><img src="/static/images/twitter-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.instagram}}"><img src="/static/images/instagram-circle-colored.png" /></a></li>
+      <li><a href="{{socialLinks.youtube}}"><img src="/static/images/youtube-circle-colored.png" /></a></li>
+    </ul>
+  </footer>
+</body>
+
+</html>
