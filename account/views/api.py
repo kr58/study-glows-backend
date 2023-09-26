@@ -162,7 +162,18 @@ class AdminLogin(APIView):
             refresh_token = RefreshToken.for_user(user)
             return Response({
                 "refresh": str(refresh_token),
-                "token": str(refresh_token.access_token)
+                "token": str(refresh_token.access_token),
+                "user": {
+                    "id": user.id,
+                    "phone": user.phone,
+                    "email": user.email,
+                    "full_name": user.full_name,
+                    "profile_image": user.profile_image.url if (user.profile_image != None) else '',
+                    "address": user.address,
+                    "city": user.city,
+                    "country": user.country,
+                    "state": user.state
+                }
             }, 200)
         return Response({
             "message": "fail"

@@ -15,6 +15,12 @@ class InstructorSerializer(BaseSerializer):
         fields = ["id", "name", "profile_image", "bio"]
 
 
+class FeatureSerializer(BaseSerializer):
+    class Meta:
+        model = Feature
+        fields = ["id", "name", "icon"]
+
+
 class CategorySerializer(BaseSerializer):
     class Meta:
         model = Category

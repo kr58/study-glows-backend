@@ -3,6 +3,7 @@ from django.urls import path
 from course.views.api import (
     InstructorView,
     CourseView,
+    AddCourseView,
     CourseDetailView,
     CategoryView,
     MyCourseView,
@@ -13,13 +14,24 @@ from course.views.api import (
     LectureDetailView,
     LectureProgressView,
     MyCourseProgressView,
+    AddInstructorView,
+    FeatureView,
 )
 
 api_urlpatterns = [
+    # instructor api
     path('instructors', InstructorView.as_view(), name="instructor_list"),
+    path('addinstructor', AddInstructorView.as_view(), name="add_instructor"),
+
+    # all categories and subcategories api
+    path('categories', CategoryView.as_view(), name="category_list"),
+
+    # feature api
+    path('features', FeatureView.as_view(), name="features list"),
 
     # course api
     path('courses', CourseView.as_view(), name="course_list"),
+    path('addcourse', AddCourseView.as_view(), name="course_list"),
     path('course/<int:id>', CourseDetailView.as_view(), name="course_detail"),
 
     # category api

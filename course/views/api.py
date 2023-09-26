@@ -9,19 +9,26 @@ from drf_yasg.utils import swagger_auto_schema
 from account.models import UserCourseProgress
 from account.utils import validateUserCourseSubscription
 
+from utils.file_upload import upload_to_s3
+
 from course.models import (
+    Feature,
     Category,
     CoursesectionLecture,
     Instructor,
     Course,
+    CourseV2,
     UserSavedCourse,
     CATEGORY_TYPE,
+    CategoryEnum,
+    AcademicSubCategoryEnum,
+    NonAcademicSubCategoryEnum
 )
 
 from course.serializers.course_serializers import (
     InstructorSerializer, CategorySerializer,
     CourseDetailSerializer, CourseListSerializer,
-    SavedCourseListSerializer
+    SavedCourseListSerializer, FeatureSerializer
 )
 
 from course.serializers.lecture_serializers import LectureSerializer
@@ -32,13 +39,44 @@ from commons.responses import (
     RESPONSE_404,
 )
 
+class CategoryView(APIView):
+    def get(self, request):
+        categoryToSubcategory = {
+            CategoryEnum.ACADEMIC.value: [subject.value for subject in AcademicSubCategoryEnum],
+            CategoryEnum.NONACADEMIC.value: [subject.value for subject in NonAcademicSubCategoryEnum]
+        }
+        return Response(categoryToSubcategory, 200)
 
 class InstructorView(APIView):
     @swagger_auto_schema(tags=["course"], responses={200: InstructorSerializer(many=True)})
     def get(self, request):
         instructors = Instructor.objects.all()
         return Response(InstructorSerializer(instructors, many=True).data, 200)
+    
+class AddInstructorView(APIView):
+    @swagger_auto_schema(tags=["course"], responses={200: InstructorSerializer(many=True)})
+    def post(self, request):
+        name = request.data["name"]
+        profile_image = request.FILES["profile_image"]
+        bio = request.data.get('bio', None)
+        tags = request.data.get('tags', None)
+        active = request.data.get('active', False)
+        score = request.data.get('score', 0)
+        instructor = Instructor.objects.create(
+            name = name,
+            profile_image = profile_image,
+            bio = bio,
+            tags = tags,
+            active = active,
+            score = score
+        )
+        return Response(InstructorSerializer(instructor).data, 200)
 
+class FeatureView(APIView):
+    @swagger_auto_schema(tags=["feature"], responses={200: FeatureSerializer(many=True)})
+    def get(self, request):
+        features = Feature.objects.all()
+        return Response(FeatureSerializer(features, many=True).data, 200)
 
 class CourseView(APIView):
     paginate_by = 6
@@ -72,7 +110,50 @@ class CourseView(APIView):
             "current_page": int(page) if page else 1
         }
         return Response(return_resp, 200)
+    
+class AddCourseView(APIView):
+    permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(tags=["course"], responses={200: CourseListSerializer(many=True)})
+    def post(self, request, *arg, **kwargs):
+        title = request.data['title']
+        thumbnail = request.FILES.get('thumbnail', None)
+        about = request.data.get('about', None)
+        language = request.data.get('language', None)
+        price = request.data.get('price', None)
+        mrp = request.data.get('mrp', None)
+        validity = request.data.get('validity', None)
+        publish = request.data.get('publish', None)
+        features = request.data.get('feature', [])
+        category = request.data.get('category', None)
+        instructors = request.data.get('instructors', [])
+        faqs = request.data.get('faq', [])
+        course_section = request.data.get('coursesection', [])
+
+        imageUrl = None
+        if thumbnail != None:
+            imageUrl = upload_to_s3(thumbnail, "course/thumbnail/")
+
+        course = CourseV2.objects.create(
+            title = title,
+            thumbnail = imageUrl,
+            about = about,
+            language = language,
+            price = price,
+            mrp = mrp,
+            validity = validity,
+            publish = publish
+        )
+        course.feature.add(*features)
+        if (category != None):
+            course.category.add(category)
+        course.instructor.add(*instructors)
+        course.faq.add(*faqs)
+        course.coursesection.add(*course_section)
+        return Response({
+            "message": 'success',
+            'course': CourseDetailSerializer(course).data
+        })
 
 class CourseDetailView(APIView):
     message = 'Course does not exits'
@@ -106,7 +187,7 @@ class CourseSectionView(APIView):
                     return Response({
                         "course": CourseListSerializer(course).data,
                         "section": CoursesectionDetailSerializer(coursesections, many=True, context={
-                            "course": course,
+                            "course": course, 
                             "user": request.user
                         }).data
                     }, 200)
