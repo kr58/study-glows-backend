@@ -168,6 +168,49 @@ class Course(TimeStampedModel):
         ordering = ("-created_at",)
 
 
+class UserSavedCourse(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        if self.course and self.user:
+            return f"course_user {str(self.course.pk)}, {str(self.user.pk)}"
+        return str(self.pk)
+
+
+class VideoV2(TimeStampedModel):
+    name = models.CharField(max_length=2048, blank=True, null=True)
+    url = models.CharField(max_length=2048)
+    length = models.PositiveBigIntegerField()
+    size = models.PositiveBigIntegerField()
+
+
+class RefImage(TimeStampedModel):
+    name = models.CharField(max_length=2048, blank=True, null=True)
+    url = models.CharField(max_length=2048)
+    size = models.PositiveBigIntegerField()
+
+
+class Document(TimeStampedModel):
+    name = models.CharField(max_length=2048, blank=True, null=True)
+    url = models.CharField(max_length=2048)
+    size = models.PositiveBigIntegerField()
+
+
+class SubjectiveTest(TimeStampedModel):
+    name = models.CharField(max_length=2048, blank=True, null=True)
+    url = models.CharField(max_length=2048)
+    size = models.PositiveBigIntegerField()
+
+
+class Chapter(TimeStampedModel):
+    name = models.CharField(max_length=2048)
+    videos = models.ManyToManyField(VideoV2, blank=True)
+    images = models.ManyToManyField(RefImage, blank=True)
+    documents = models.ManyToManyField(Document, blank=True)
+    tests = models.ManyToManyField(SubjectiveTest, blank=True)
+
+
 class CourseV2(TimeStampedModel):
     title = models.CharField(max_length=1024, blank=True, null=True)
     thumbnail = models.TextField(blank=True, null=True)
@@ -181,20 +224,10 @@ class CourseV2(TimeStampedModel):
     category = EnumField(CategoryEnum, blank=True)
     instructor = models.ManyToManyField(Instructor, blank=True)
     faq = models.ManyToManyField(FAQ, blank=True)
-    coursesection = models.ManyToManyField(CourseSection, blank=True)
+    chapters = models.ManyToManyField(Chapter, blank=True)
 
     def __str__(self):
         return self.title if self.title else str(self.pk)
 
     class Meta:
         ordering = ("-created_at",)
-
-
-class UserSavedCourse(TimeStampedModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        if self.course and self.user:
-            return f"course_user {str(self.course.pk)}, {str(self.user.pk)}"
-        return str(self.pk)

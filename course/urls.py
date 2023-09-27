@@ -16,6 +16,8 @@ from course.views.api import (
     MyCourseProgressView,
     AddInstructorView,
     FeatureView,
+    AddChapter,
+    AddVideoToChapter
 )
 
 api_urlpatterns = [
@@ -33,6 +35,10 @@ api_urlpatterns = [
     path('courses', CourseView.as_view(), name="course_list"),
     path('addcourse', AddCourseView.as_view(), name="course_list"),
     path('course/<int:id>', CourseDetailView.as_view(), name="course_detail"),
+
+    # chapter api
+    path('addchapter', AddChapter.as_view(), name="add_chapter"),
+    path('chapter/<int:id>/addvideo', AddVideoToChapter.as_view(), name="add_chapter"),
 
     # category api
     path('course/<str:type>/category', CategoryView.as_view(), name="course_category"),

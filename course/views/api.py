@@ -22,22 +22,30 @@ from course.models import (
     CATEGORY_TYPE,
     CategoryEnum,
     AcademicSubCategoryEnum,
-    NonAcademicSubCategoryEnum
+    NonAcademicSubCategoryEnum,
+    Chapter,
+    VideoV2,
+    Document,
+    RefImage,
+    SubjectiveTest
 )
 
 from course.serializers.course_serializers import (
     InstructorSerializer, CategorySerializer,
     CourseDetailSerializer, CourseListSerializer,
-    SavedCourseListSerializer, FeatureSerializer
+    SavedCourseListSerializer, FeatureSerializer,
 )
 
-from course.serializers.lecture_serializers import LectureSerializer
+from course.serializers.lecture_serializers import (
+    LectureSerializer, ChapterSerializer,
+)
 from course.serializers.course_section_serializers import CoursesectionDetailSerializer
 
 from commons.responses import (
     RESPONSE_400,
     RESPONSE_404,
 )
+
 
 class CategoryView(APIView):
     def get(self, request):
@@ -47,12 +55,14 @@ class CategoryView(APIView):
         }
         return Response(categoryToSubcategory, 200)
 
+
 class InstructorView(APIView):
     @swagger_auto_schema(tags=["course"], responses={200: InstructorSerializer(many=True)})
     def get(self, request):
         instructors = Instructor.objects.all()
         return Response(InstructorSerializer(instructors, many=True).data, 200)
-    
+
+
 class AddInstructorView(APIView):
     @swagger_auto_schema(tags=["course"], responses={200: InstructorSerializer(many=True)})
     def post(self, request):
@@ -63,20 +73,22 @@ class AddInstructorView(APIView):
         active = request.data.get('active', False)
         score = request.data.get('score', 0)
         instructor = Instructor.objects.create(
-            name = name,
-            profile_image = profile_image,
-            bio = bio,
-            tags = tags,
-            active = active,
-            score = score
+            name=name,
+            profile_image=profile_image,
+            bio=bio,
+            tags=tags,
+            active=active,
+            score=score
         )
         return Response(InstructorSerializer(instructor).data, 200)
+
 
 class FeatureView(APIView):
     @swagger_auto_schema(tags=["feature"], responses={200: FeatureSerializer(many=True)})
     def get(self, request):
         features = Feature.objects.all()
         return Response(FeatureSerializer(features, many=True).data, 200)
+
 
 class CourseView(APIView):
     paginate_by = 6
@@ -110,7 +122,8 @@ class CourseView(APIView):
             "current_page": int(page) if page else 1
         }
         return Response(return_resp, 200)
-    
+
+
 class AddCourseView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -135,14 +148,14 @@ class AddCourseView(APIView):
             imageUrl = upload_to_s3(thumbnail, "course/thumbnail/")
 
         course = CourseV2.objects.create(
-            title = title,
-            thumbnail = imageUrl,
-            about = about,
-            language = language,
-            price = price,
-            mrp = mrp,
-            validity = validity,
-            publish = publish
+            title=title,
+            thumbnail=imageUrl,
+            about=about,
+            language=language,
+            price=price,
+            mrp=mrp,
+            validity=validity,
+            publish=publish
         )
         course.feature.add(*features)
         if (category != None):
@@ -155,10 +168,11 @@ class AddCourseView(APIView):
             'course': CourseDetailSerializer(course).data
         })
 
+
 class CourseDetailView(APIView):
     message = 'Course does not exits'
 
-    @swagger_auto_schema(tags=["course"],  responses={200: CourseDetailSerializer(many=True), 404: message})
+    @swagger_auto_schema(tags=["course"], responses={200: CourseDetailSerializer(many=True), 404: message})
     def get(self, request, *arg, **kwargs):
         course_id = kwargs.get('id')
         if course_id:
@@ -187,7 +201,7 @@ class CourseSectionView(APIView):
                     return Response({
                         "course": CourseListSerializer(course).data,
                         "section": CoursesectionDetailSerializer(coursesections, many=True, context={
-                            "course": course, 
+                            "course": course,
                             "user": request.user
                         }).data
                     }, 200)
@@ -270,7 +284,7 @@ class LectureProgressView(APIView):
 class CategoryView(APIView):
     message = "Type does not exits."
 
-    @swagger_auto_schema(tags=["course"],  responses={200: CategorySerializer(many=True), 400: message})
+    @swagger_auto_schema(tags=["course"], responses={200: CategorySerializer(many=True), 400: message})
     def get(self, request, *arg, **kwargs):
         category_type = kwargs.get('type')
         if category_type in [category[0] for category in CATEGORY_TYPE]:
@@ -328,7 +342,7 @@ class MyCourseProgressView(APIView):
             course=course
         ).count()
         if total_lectures > 0:
-            return (user_completed_lectures * 100)//total_lectures
+            return (user_completed_lectures * 100) // total_lectures
         return ""
 
 
@@ -344,7 +358,7 @@ class SavedCourseView(APIView):
 class SaveCourse(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @ swagger_auto_schema(tags=["course"], responses={200: "success", 400: "fail"})
+    @swagger_auto_schema(tags=["course"], responses={200: "success", 400: "fail"})
     def post(self, request, *args, **kwargs):
         course_id = kwargs.get('id')
         if course_id:
@@ -363,7 +377,7 @@ class SaveCourse(APIView):
 class UnsaveCourse(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @ swagger_auto_schema(tags=["course"], responses={200: "success", 400: "fail"})
+    @swagger_auto_schema(tags=["course"], responses={200: "success", 400: "fail"})
     def post(self, request, *args, **kwargs):
         course_id = kwargs.get('id')
         if course_id:
@@ -374,3 +388,33 @@ class UnsaveCourse(APIView):
                     "message": "success",
                 }, 200)
         return Response({"message": "fail"}, 400)
+
+
+class AddChapter(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            chapter_name = request.data['name']
+            chapter = Chapter.objects.create(name=chapter_name)
+            return Response({"success": True, "chapter": ChapterSerializer(chapter).data})
+        except Exception as e:
+            return Response({"success": False, "message": e})
+
+
+class AddVideoToChapter(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            chapter_id = kwargs.get('id')
+            video_files = request.FILES.getlist('files')
+            chapter = Chapter.objects.get(id=chapter_id)
+            for video_file in video_files:
+                url = upload_to_s3(video_file, "course/videos/")
+                video = VideoV2.objects.create(name=video_file.name, url=url, length=0, size=video_file.size)
+                chapter.videos.add(video)
+
+            return Response({"success": True, "chapter": ChapterSerializer(chapter).data})
+        except Exception as e:
+            return Response({"success": False, "message": e})

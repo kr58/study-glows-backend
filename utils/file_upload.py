@@ -1,11 +1,10 @@
 from django.conf import settings
-from background_task import background
 import boto3
 
 
 def upload_to_s3(file, folder=""):
     bucket = settings.AWS_STORAGE_BUCKET_NAME
-    key = 'media/' + folder + file.name
+    key = 'media/' + folder + "+".join([f.strip() for f in file.name.split(" ")])
     session = boto3.Session(
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,

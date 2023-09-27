@@ -3,7 +3,7 @@ from rest_framework import serializers
 from account.models import UserCourseProgress
 from commons.serializer import BaseSerializer
 
-from course.models import Lecture, Resources, Video
+from course.models import Lecture, Resources, Video, VideoV2, Document, RefImage, SubjectiveTest, Chapter
 
 
 class ResourseSerializer(BaseSerializer):
@@ -106,3 +106,38 @@ class DemoLectureSerializer(BaseSerializer):
     class Meta:
         model = Lecture
         fields = ['id', 'name', 'video']
+
+
+class VideoSerializerV2(BaseSerializer):
+    class Meta:
+        model = VideoV2
+        fields = ['id', 'name', 'url', 'size', 'length']
+
+
+class RefImageSerializer(BaseSerializer):
+    class Meta:
+        model = RefImage
+        fields = ['id', 'name', 'url', 'size']
+
+
+class DocumentSerializer(BaseSerializer):
+    class Meta:
+        model = Document
+        fields = ['id', 'name', 'url', 'size']
+
+
+class SubjectiveTestSerializer(BaseSerializer):
+    class Meta:
+        model = SubjectiveTest
+        fields = ['id', 'name', 'url', 'size']
+
+
+class ChapterSerializer(BaseSerializer):
+    videos = VideoSerializerV2(read_only=True, many=True)
+    documents = DocumentSerializer(read_only=True, many=True)
+    images = RefImageSerializer(read_only=True, many=True)
+    tests = SubjectiveTestSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Chapter
+        fields = ['id', 'name', 'documents', 'videos', 'images', 'tests']
