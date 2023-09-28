@@ -1,4 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
+from rest_framework_swagger.views import get_swagger_view
+
+# drf_yasg code starts here
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 from course.views.api import (
     InstructorView,
@@ -20,7 +26,18 @@ from course.views.api import (
     AddVideoToChapter
 )
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Backend API",
+        default_version='v1',
+    ),
+    public=True,
+)
+
 api_urlpatterns = [
+    # Swagger API
+    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0) , name='schema-json'),
+
     # instructor api
     path('instructors', InstructorView.as_view(), name="instructor_list"),
     path('addinstructor', AddInstructorView.as_view(), name="add_instructor"),
